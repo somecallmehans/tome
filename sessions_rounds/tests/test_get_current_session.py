@@ -45,5 +45,7 @@ def test_get_no_session():
     url = reverse("make_sessions_and_rounds")
 
     res = client.get(url)
+    parsed_res = res.json()
 
     assert res.status_code == status.HTTP_400_BAD_REQUEST
+    assert parsed_res["message"] == "Open session for current month not found."

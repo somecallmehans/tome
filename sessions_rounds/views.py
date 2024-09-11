@@ -1,5 +1,4 @@
-import json
-
+from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
 from rest_framework.response import Response
@@ -8,7 +7,9 @@ from rest_framework.decorators import api_view
 
 from .models import Sessions, Rounds
 from .serializers import SessionSerializer
-from users.models import Participants
+
+# from users.models import Participants
+
 
 POST = "POST"
 
@@ -27,11 +28,16 @@ def sessions_and_rounds(request):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    current_session = Sessions.objects.filter(month_year=mm_yy).filter(closed=False)
-    serializer = SessionSerializer(current_session, many=True)
-    if not serializer.data:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    return Response(serializer.data[0], status=status.HTTP_200_OK)
+    try:
+        current_session = Sessions.objects.get(month_year=mm_yy, closed=False)
+        serializer = SessionSerializer(current_session)
+    except Sessions.DoesNotExist as e:
+        return Response(
+            {"message": "Open session for current month not found."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
     # session_id = body.get("session_id", None)
 
     # participant_ids = body.get("participants", [])
