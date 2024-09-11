@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'achievements',
+    'sessions_rounds',
     'rest_framework'
 ]
 
