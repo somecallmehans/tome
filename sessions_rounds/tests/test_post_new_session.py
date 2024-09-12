@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from unittest import mock
 
+from sessions_rounds.models import Sessions
+
 
 @pytest.mark.django_db
 @mock.patch(
@@ -28,17 +30,5 @@ def test_post_new_session_no_id(mock_date):
     assert parsed_res["id"] == 1 and parsed_res["month_year"] == "11-24"
     assert len(parsed_res["rounds"]) == 2
 
-
-# @pytest.mark.django_db
-# def test_post_new_session_no_id():
-#     client = APIClient()
-# for n in range(1, 20):
-#     Participants.objects.create(id=n, name=f"GUY-{n}")
-
-#     url = reverse('make_sessions_and_rounds')
-
-#     payload = {"session_id": 111}
-
-#     response = client.post(url, payload, format='json')
-
-#     assert response.status_code == status.HTTP_200_OK
+    session_exists = Sessions.objects.filter(id=1).exists()
+    assert session_exists
