@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Sessions(models.Model):
     month_year = models.CharField(max_length=5)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -7,11 +8,13 @@ class Sessions(models.Model):
     deleted = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'sessions'
+        db_table = "sessions"
+
 
 class RoundOptions(models.IntegerChoices):
     ONE = 1
     TWO = 2
+
 
 class Rounds(models.Model):
     session_id = models.ForeignKey(Sessions, on_delete=models.CASCADE)
@@ -21,8 +24,4 @@ class Rounds(models.Model):
     deleted = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'rounds'
-
-
-
-
+        db_table = "rounds"
