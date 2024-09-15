@@ -1,4 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
+import json
+import random
+
 from datetime import datetime
 
 from rest_framework.response import Response
@@ -6,7 +8,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from .models import Sessions, Rounds
+
 from .serializers import SessionSerializer
+from .helpers import generate_pods, RoundInformationService
 
 
 POST = "POST"
@@ -35,3 +39,37 @@ def sessions_and_rounds(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def begin_round(request):
+    """Begin a round. Request expects a round_id and a list of participants.
+    If a participant in the list does not have an id, it will be created.
+
+    Return a list of lists (pods)"""
+    body = json.loads(request.body.decode("utf-8"))
+    participants = body.get("participants", None)
+    round = Rounds.objects.get(id=body.get("round", None))
+    session = Sessions.objects.get(id=body.get("session", None))
+
+    if not participants or not round or not session:
+        return Response(
+            {"message": "Missing information to begin round."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    round_service = RoundInformationService(
+        participants=participants, session=session, round=round
+    )
+    all_participants = round_service.build_participants_and_achievements()
+
+    if round.round_number == 1:
+        random.shuffle(all_participants)
+        pods = generate_pods(all_participants)
+    else:
+        all_participants.sort(
+            key=lambda x: x["total_points_current_month"], reverse=True
+        )
+        pods = generate_pods(all_participants)
+
+    return Response(pods, status=status.HTTP_201_CREATED)
