@@ -1,4 +1,5 @@
 import pytest
+import random
 from datetime import datetime
 
 from django.urls import reverse
@@ -9,6 +10,7 @@ from unittest import mock
 from achievements.models import Achievements
 from sessions_rounds.models import Sessions, Rounds
 from sessions_rounds.serializers import RoundsSerializer, SessionSerializer
+from sessions_rounds.helpers import generate_pods
 from users.models import Participants, ParticipantAchievements
 
 test_participants = [
@@ -34,6 +36,7 @@ combined_list = test_participants + test_participants_no_id
 @pytest.mark.django_db
 @mock.patch("users.models.datetime", side_effect=lambda *args, **kw: date(*args, **kw))
 def test_post_begin_round(mock_date):
+    """Begin a new round where everyone gets participation points."""
     client = APIClient()
     url = reverse("begin_round")
 
@@ -42,7 +45,6 @@ def test_post_begin_round(mock_date):
     mocked_mmyy = mocked_today.strftime("%m-%y")
 
     s1 = Sessions.objects.create(id=1, month_year=mocked_mmyy, closed=True)
-    # s2 = Sessions.objects.create(id=2, month_year="09_23", closed=False)
     r1 = Rounds.objects.create(id=1, session_id=s1, round_number=1)
     a1 = Achievements.objects.create(
         id=24, name="Participation Trophy", point_value=3, parent_id=None
@@ -55,12 +57,6 @@ def test_post_begin_round(mock_date):
     for p in test_participants:
         Participants.objects.create(name=p["name"])
 
-    p1 = Participants.objects.get(id=1)
-
-    ParticipantAchievements.objects.create(
-        participants=p1, rounds=r1, sessions=s1, achievements=a1
-    )
-
     payload = {
         "round": round_serializer.data["id"],
         "session": session_serializer.data["id"],
@@ -68,3 +64,45 @@ def test_post_begin_round(mock_date):
     }
 
     response = client.post(url, payload, format="json")
+    parsed_res = response.json()
+    breakpoint()
+
+
+def pod_factory(pods):
+    four_pods = 0
+    three_pods = 0
+
+    generated_pods = generate_pods(pods)
+
+    for s in generated_pods:
+        if len(s) == 4:
+            four_pods += 1
+        else:
+            three_pods += 1
+
+    return four_pods, three_pods
+
+
+def test_post_pod_generator():
+    """Test that the pod generator correctly makes pods of
+    4 and 3 based on the number of participants it receives."""
+
+    # 17 Players
+    four_pods, three_pods = pod_factory(pods=list(range(1, 18)))
+    assert four_pods == 2
+    assert three_pods == 3
+
+    # 16 Players
+    four_pods, three_pods = pod_factory(pods=list(range(1, 17)))
+    assert four_pods == 4
+    assert three_pods == 0
+
+    # 27 Players
+    four_pods, three_pods = pod_factory(pods=list(range(1, 28)))
+    assert four_pods == 6
+    assert three_pods == 1
+
+    # 33 Players
+    four_pods, three_pods = pod_factory(pods=list(range(1, 30)))
+    assert four_pods == 5
+    assert three_pods == 3
