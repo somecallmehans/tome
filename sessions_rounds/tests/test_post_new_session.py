@@ -9,7 +9,7 @@ from unittest import mock
 from sessions_rounds.models import Sessions
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(serialized_rollback=True)
 @mock.patch(
     "sessions_rounds.views.datetime", side_effect=lambda *args, **kw: date(*args, **kw)
 )

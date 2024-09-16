@@ -62,14 +62,13 @@ def begin_round(request):
         participants=participants, session=session, round=round
     )
     all_participants = round_service.build_participants_and_achievements()
-
-    if round.round_number == 1:
+    (
         random.shuffle(all_participants)
-        pods = generate_pods(all_participants)
-    else:
-        all_participants.sort(
+        if round.round_number == 1
+        else all_participants.sort(
             key=lambda x: x["total_points_current_month"], reverse=True
         )
-        pods = generate_pods(all_participants)
+    )
+    pods = generate_pods(all_participants)
 
     return Response(pods, status=status.HTTP_201_CREATED)

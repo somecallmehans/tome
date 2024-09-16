@@ -23,7 +23,7 @@ def test_post_new_participant():
     assert participant_exists
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(serialized_rollback=True)
 def test_post_new_participant_fail():
     client = APIClient()
 
