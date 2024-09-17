@@ -79,7 +79,7 @@ class RoundInformationService:
     def get_session_achievement_data(self):
         """Get achievement data for the current session."""
         achievement_data = ParticipantAchievements.objects.filter(
-            sessions_id=self.session, achievements_id=PARTICIPATION_ACHIEVEMENT_ID
+            sessions_id=self.session.id, achievements_id=PARTICIPATION_ACHIEVEMENT_ID
         )
         earned_participation_achievements = ParticipantsAchievementsSerializer(
             achievement_data, many=True

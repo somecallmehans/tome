@@ -80,4 +80,14 @@ def close_round(request):
     Essentially flipping the associated round 'closed' flag to true
 
     If the received round is a second round, also flip the session flag to true."""
-    ...
+    body = json.loads(request.body.decode("utf-8"))
+    round = body.get("round", None)
+    session_id = body.get("session", None)
+
+    if round["round_number"] == 1:
+        Rounds.objects.filter(id=round["id"]).update(closed=True)
+    else:
+        Rounds.objects.filter(id=round["id"]).update(closed=True)
+        Sessions.objects.filter(id=session_id).update(closed=True)
+
+    return Response(status=status.HTTP_201_CREATED)
