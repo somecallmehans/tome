@@ -43,7 +43,7 @@ def sessions_and_rounds(request):
 
 @api_view(["POST"])
 def begin_round(request):
-    """Begin a round. Request expects a round_id and a list of participants.
+    """Begin a round. Request expects a round_id, session_id, and a list of participants.
     If a participant in the list does not have an id, it will be created.
 
     Return a list of lists (pods)"""
@@ -72,3 +72,12 @@ def begin_round(request):
     pods = generate_pods(all_participants)
 
     return Response(pods, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+def close_round(request):
+    """Close a round. Endpoint expects a round_id and a session_id
+    Essentially flipping the associated round 'closed' flag to true
+
+    If the received round is a second round, also flip the session flag to true."""
+    ...
