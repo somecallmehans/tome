@@ -15,27 +15,24 @@ from sessions_rounds.test_helpers import combined_list
 
 @pytest.mark.django_db(serialized_rollback=True)
 @mock.patch("users.models.datetime", side_effect=lambda *args, **kw: date(*args, **kw))
-def test_post_begin_round(mock_date, create_base_participants):
+def test_post_begin_round(
+    mock_date, create_base_participants, create_base_session_and_rounds
+):
     """Begin a new round where everyone gets participation points."""
     client = APIClient()
     url = reverse("begin_round")
 
     mocked_today = datetime(2024, 11, 25)
     mock_date.today.return_value = mocked_today
-    mocked_mmyy = mocked_today.strftime("%m-%y")
 
-    s1 = Sessions.objects.create(id=1, month_year=mocked_mmyy, closed=True)
-    r1 = Rounds.objects.create(id=1, session_id=s1, round_number=1)
+    session = Sessions.objects.get(id=11)
+    round = Rounds.objects.get(id=11)
     Achievements.objects.create(
         id=24, name="Participation Trophy", point_value=3, parent_id=None
     )
 
-    session_serializer = SessionSerializer(s1)
-    round_serializer = RoundsSerializer(r1)
-
-    # Add some of the participants to the testdb
-    # for p in test_participants:
-    #     Participants.objects.create(name=p["name"])
+    session_serializer = SessionSerializer(session)
+    round_serializer = RoundsSerializer(round)
 
     payload = {
         "round": round_serializer.data["id"],
@@ -44,6 +41,7 @@ def test_post_begin_round(mock_date, create_base_participants):
     }
 
     response = client.post(url, payload, format="json")
+
     parsed_res = response.json()
     assert response.status_code == status.HTTP_201_CREATED
     assert len(parsed_res[0]) == 4

@@ -15,7 +15,9 @@ from users.models import Participants
 
 @pytest.mark.django_db(serialized_rollback=True)
 @mock.patch("users.models.datetime", side_effect=lambda *args, **kw: date(*args, **kw))
-def test_post_begin_round_two_session_two(mock_date, create_base_participants):
+def test_post_begin_round_two_session_two(
+    mock_date, create_base_participants, create_base_session_and_rounds
+):
     """Begin a new round that is 'mid season'.
 
     Some players will have some existing achievements and get
@@ -26,7 +28,6 @@ def test_post_begin_round_two_session_two(mock_date, create_base_participants):
 
     mocked_today = datetime(2024, 11, 25)
     mock_date.today.return_value = mocked_today
-    mocked_mmyy = mocked_today.strftime("%m-%y")
 
     # One real achievement and some fake ones
     participation_award = Achievements.objects.create(
@@ -39,67 +40,66 @@ def test_post_begin_round_two_session_two(mock_date, create_base_participants):
         id=2, name="Mega Win", point_value=3, parent_id=None
     )
 
-    s1 = Sessions.objects.create(id=1, month_year=mocked_mmyy, closed=True)
-    s2 = Sessions.objects.create(id=2, month_year=mocked_mmyy, closed=False)
-    s1r1 = Rounds.objects.create(id=3, session_id=s1, round_number=1)
-    s1r2 = Rounds.objects.create(id=4, session_id=s1, round_number=2)
-    s2r1 = Rounds.objects.create(id=5, session_id=s2, round_number=1)
-    s2r2 = Rounds.objects.create(id=6, session_id=s2, round_number=2)
+    sessions = Sessions.objects.all()
+    rounds = Rounds.objects.all()
 
-    session_serializer = SessionSerializer(s2)
-    round_serializer = RoundsSerializer(s2r2)
+    session_serializer = SessionSerializer(sessions[1])
+    round_serializer = RoundsSerializer(rounds[3])
 
     participant_data = Participants.objects.all()
 
     ## P1 Achievements. Earned participation in S1 R1 AND S2 R1
     participant_achievement_factory(
-        session=s1,
-        round=s1r1,
+        session=sessions[0],
+        round=rounds[0],
         participant=participant_data[0],
         achievement=participation_award,
     )
     participant_achievement_factory(
-        session=s1, round=s1r1, participant=participant_data[0], achievement=win_1
+        session=sessions[0],
+        round=rounds[0],
+        participant=participant_data[0],
+        achievement=win_1,
     )
     participant_achievement_factory(
-        session=s2,
-        round=s2r1,
+        session=sessions[1],
+        round=rounds[2],
         participant=participant_data[0],
         achievement=participation_award,
     )
 
     ## P2 Achievements. Earned participation in S1 R1 AND S2 R1
     participant_achievement_factory(
-        session=s1,
-        round=s1r1,
+        session=sessions[0],
+        round=rounds[0],
         participant=participant_data[1],
         achievement=participation_award,
     )
     participant_achievement_factory(
-        session=s2,
-        round=s2r1,
+        session=sessions[1],
+        round=rounds[2],
         participant=participant_data[1],
         achievement=participation_award,
     )
 
     ## P3 Achievements (NO S2 Participation)
     participant_achievement_factory(
-        session=s1,
-        round=s1r1,
+        session=sessions[0],
+        round=rounds[0],
         participant=participant_data[2],
         achievement=participation_award,
     )
     participant_achievement_factory(
-        session=s1,
-        round=s1r2,
+        session=sessions[0],
+        round=rounds[1],
         participant=participant_data[2],
         achievement=win_2,
     )
 
     ## P4 Achievements (NO S2 Participation)
     participant_achievement_factory(
-        session=s1,
-        round=s1r1,
+        session=sessions[0],
+        round=rounds[0],
         participant=participant_data[3],
         achievement=participation_award,
     )
@@ -121,7 +121,7 @@ def test_post_begin_round_two_session_two(mock_date, create_base_participants):
         {"id": 4, "name": "Noella Gannon", "total_points_current_month": 6},
     ]
     assert parsed_res[1] == [
-        {"id": 8, "name": "Celestia Clearie", "total_points_current_month": 3},
-        {"id": 9, "name": "Gilbert Loxton", "total_points_current_month": 3},
-        {"id": 10, "name": "Sammie Cruikshanks", "total_points_current_month": 3},
+        {"id": 5, "name": "Celestia Clearie", "total_points_current_month": 3},
+        {"id": 6, "name": "Gilbert Loxton", "total_points_current_month": 3},
+        {"id": 7, "name": "Sammie Cruikshanks", "total_points_current_month": 3},
     ]

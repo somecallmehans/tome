@@ -13,7 +13,9 @@ from sessions_rounds.models import Sessions
 @mock.patch(
     "sessions_rounds.views.datetime", side_effect=lambda *args, **kw: date(*args, **kw)
 )
-def test_post_new_session_no_id(mock_date):
+def test_post_new_session_no_id(
+    mock_date,
+):
     client = APIClient()
 
     url = reverse("make_sessions_and_rounds")
