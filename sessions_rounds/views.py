@@ -61,6 +61,7 @@ def begin_round(request):
     round_service = RoundInformationService(
         participants=participants, session=session, round=round
     )
+
     all_participants = round_service.build_participants_and_achievements()
     (
         random.shuffle(all_participants)

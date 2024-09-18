@@ -2,11 +2,17 @@ import pytest
 from unittest import mock
 from datetime import datetime
 
-from sessions_rounds.test_helpers import test_participants
 
 from achievements.models import Achievements
 from users.models import Participants
 from sessions_rounds.models import Sessions, Rounds
+
+test_participants = [
+    {"name": "Trenna Thain"},
+    {"name": "Fern Penvarden"},
+    {"name": "Nikita Heape"},
+    {"name": "Bevon Goldster"},
+]
 
 
 @pytest.fixture(scope="function")

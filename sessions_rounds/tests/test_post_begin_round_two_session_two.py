@@ -9,8 +9,15 @@ from unittest import mock
 from achievements.models import Achievements
 from sessions_rounds.models import Sessions, Rounds
 from sessions_rounds.serializers import RoundsSerializer, SessionSerializer
-from sessions_rounds.test_helpers import participant_achievement_factory, combined_list
+from sessions_rounds.test_helpers import participant_achievement_factory
 from users.models import Participants
+from users.serializers import ParticipantsSerializer
+
+test_participants_no_id = [
+    {"name": "Mariana Powys"},
+    {"name": "Rock Moulden"},
+    {"name": "Ignacio Ranscomb"},
+]
 
 
 @pytest.mark.django_db(serialized_rollback=True)
@@ -104,10 +111,13 @@ def test_post_begin_round_two_session_two(
         achievement=participation_award,
     )
 
+    p_serialized = ParticipantsSerializer(participant_data, many=True)
+    p_to_send = [{"id": p["id"], "name": p["name"]} for p in p_serialized.data]
+
     payload = {
         "round": round_serializer.data["id"],
         "session": session_serializer.data["id"],
-        "participants": combined_list,
+        "participants": p_to_send + test_participants_no_id,
     }
 
     response = client.post(url, payload, format="json")
@@ -121,7 +131,7 @@ def test_post_begin_round_two_session_two(
         {"id": 4, "name": "Noella Gannon", "total_points_current_month": 6},
     ]
     assert parsed_res[1] == [
-        {"id": 5, "name": "Celestia Clearie", "total_points_current_month": 3},
-        {"id": 6, "name": "Gilbert Loxton", "total_points_current_month": 3},
-        {"id": 7, "name": "Sammie Cruikshanks", "total_points_current_month": 3},
+        {"id": 8, "name": "Mariana Powys", "total_points_current_month": 3},
+        {"id": 9, "name": "Rock Moulden", "total_points_current_month": 3},
+        {"id": 10, "name": "Ignacio Ranscomb", "total_points_current_month": 3},
     ]

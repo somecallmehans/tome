@@ -6,11 +6,19 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from unittest import mock
 
+from users.models import Participants
+from users.serializers import ParticipantsSerializer
+
 from achievements.models import Achievements
 from sessions_rounds.models import Sessions, Rounds
 from sessions_rounds.serializers import RoundsSerializer, SessionSerializer
 from sessions_rounds.helpers import generate_pods
-from sessions_rounds.test_helpers import combined_list
+
+test_participants_no_id = [
+    {"name": "Celestia Clearie"},
+    {"name": "Gilbert Loxton"},
+    {"name": "Sammie Cruikshanks"},
+]
 
 
 @pytest.mark.django_db(serialized_rollback=True)
@@ -34,10 +42,14 @@ def test_post_begin_round(
     session_serializer = SessionSerializer(session)
     round_serializer = RoundsSerializer(round)
 
+    p_data = Participants.objects.all()
+    p_serialized = ParticipantsSerializer(p_data, many=True)
+    p_to_send = [{"id": p["id"], "name": p["name"]} for p in p_serialized.data]
+
     payload = {
         "round": round_serializer.data["id"],
         "session": session_serializer.data["id"],
-        "participants": combined_list,
+        "participants": p_to_send + test_participants_no_id,
     }
 
     response = client.post(url, payload, format="json")

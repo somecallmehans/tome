@@ -2,17 +2,23 @@ import pytest
 from unittest import mock
 from datetime import datetime
 from users.models import Participants
-from sessions_rounds.test_helpers import test_participants
 from sessions_rounds.models import Sessions, Rounds
+
+test_participants = [
+    {"name": "Glennis Sansam"},
+    {"name": "Sara Dewhurst"},
+    {"name": "Uriel Cohani"},
+    {"name": "Noella Gannon"},
+]
 
 
 @pytest.fixture(scope="function")
 def create_base_participants(django_db_setup, django_db_blocker):
     base_participants = []
     with django_db_blocker.unblock():
-        for p in test_participants:
-            p = Participants.objects.create(name=p["name"])
-            base_participants.append(p)
+        for idx, p in enumerate(test_participants):
+            participant = Participants.objects.create(id=idx + 1, name=p["name"])
+            base_participants.append(participant)
     return base_participants
 
 
