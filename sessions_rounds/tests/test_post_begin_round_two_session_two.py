@@ -124,7 +124,7 @@ def test_post_begin_round_two_session_two(
     parsed_res = response.json()
 
     assert response.status_code == status.HTTP_201_CREATED
-g    assert parsed_res[0] == [
+    assert parsed_res[0] == [
         {"id": 3, "name": "Uriel Cohani", "total_points_current_month": 9},
         {"id": 1, "name": "Glennis Sansam", "total_points_current_month": 7},
         {"id": 2, "name": "Sara Dewhurst", "total_points_current_month": 6},
