@@ -2,9 +2,11 @@ from django.urls import path
 from .views import (
     get_achievements_with_restrictions,
     post_achievements_for_participants,
+    upsert_achievements,
 )
 
 urlpatterns = [
+    path("upsert_achievements/", upsert_achievements, name="upsert_achievements"),
     path(
         "submit_achievements/",
         post_achievements_for_participants,

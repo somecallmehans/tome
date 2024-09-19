@@ -17,6 +17,15 @@ def get_achievements_with_restrictions(request):
 
 
 @api_view(["POST"])
+def upsert_achievements(request):
+    body = json.loads(request.body.decode("utf-8"))
+    achievement, _ = Achievements.objects.update_or_create(**body)
+    serialized = AchievementsSerializer(achievement)
+
+    return Response(serialized.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
 def post_achievements_for_participants(request):
     """
     Take in session_id, round_id, and a list of participants,
