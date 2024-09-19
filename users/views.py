@@ -17,18 +17,18 @@ def get_all_participants():
 
 
 @api_view(["POST"])
-def post_participant(request):
+def upsert_participant(request):
     body = json.loads(request.body.decode("utf-8"))
-    p_name = body.get("name", None)
+    id = body.get("id", None)
+    name = body.get("name", None)
 
-    try:
-        new_participant = Participants.objects.create(name=p_name)
-        serializer = ParticipantsSerializer(new_participant)
-    except IntegrityError:
+    if not id and not name:
         return Response(
-            {"message": "Name not provided"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "Name not provided for new participant"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
+    participant, _ = Participants.objects.update_or_create(**body)
+    serializer = ParticipantsSerializer(participant)
+
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-

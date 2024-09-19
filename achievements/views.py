@@ -13,18 +13,17 @@ from achievements.helpers import AchievementCleaverService
 def get_achievements_with_restrictions(request):
     achievements = Achievements.objects.prefetch_related("restrictions")
     serializer = AchievementsSerializer(achievements, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
 def upsert_achievements(request):
     body = json.loads(request.body.decode("utf-8"))
+    id = body.get("id", None)
+    point_value = body.get("point_value", None)
+    name = body.get("name", None)
 
-    if (
-        body.get("id", None) is None
-        and body.get("point_value", None) is None
-        or not body.get("name", None) is None
-    ):
+    if id is None and (point_value is None or name is None):
         return Response(
             {
                 "message": "Information to create/update achievement missing from request body."

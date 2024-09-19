@@ -85,10 +85,15 @@ def close_round(request):
     round = body.get("round", None)
     session_id = body.get("session", None)
 
-    if round["round_number"] == 1:
-        Rounds.objects.filter(id=round["id"]).update(closed=True)
-    else:
-        Rounds.objects.filter(id=round["id"]).update(closed=True)
+    if not round or not session_id:
+        return Response(
+            {"message": "Session/Round information not provided"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    Rounds.objects.filter(id=round["id"]).update(closed=True)
+
+    if round["round_number"] != 1:
         Sessions.objects.filter(id=session_id).update(closed=True)
 
     return Response(status=status.HTTP_201_CREATED)

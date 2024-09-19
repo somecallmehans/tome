@@ -62,3 +62,16 @@ def test_post_close_round_two_and_session(create_base_session_and_rounds):
     assert response.status_code == status.HTTP_201_CREATED
     assert round_test.closed == True
     assert session_test.closed == True
+
+
+@pytest.mark.django_db(serialized_rollback=True)
+def test_post_close_round_fail():
+    """Close round one, leave the session open."""
+
+    client = APIClient()
+    url = reverse("close_round")
+
+    payload = {}
+
+    response = client.post(url, payload, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST

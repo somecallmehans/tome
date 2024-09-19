@@ -11,7 +11,7 @@ from users.models import Participants
 def test_post_new_participant():
     client = APIClient()
 
-    url = reverse("post_participant")
+    url = reverse("upsert_participant")
 
     payload = {"name": "John Newguy"}
 
@@ -23,11 +23,22 @@ def test_post_new_participant():
     assert participant_exists
 
 
-@pytest.mark.django_db(serialized_rollback=True)
+@pytest.mark.django_db
+def test_post_update_participant():
+    client = APIClient()
+    url = reverse("upsert_participant")
+
+    payload = {"id": 1, "name": "Jane Newgirl"}
+    response = client.post(url, payload, format="json")
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.django_db()
 def test_post_new_participant_fail():
     client = APIClient()
 
-    url = reverse("post_participant")
+    url = reverse("upsert_participant")
 
     payload = {}
 
