@@ -19,6 +19,19 @@ def get_achievements_with_restrictions(request):
 @api_view(["POST"])
 def upsert_achievements(request):
     body = json.loads(request.body.decode("utf-8"))
+
+    if (
+        body.get("id", None) is None
+        and body.get("point_value", None) is None
+        or not body.get("name", None) is None
+    ):
+        return Response(
+            {
+                "message": "Information to create/update achievement missing from request body."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     achievement, _ = Achievements.objects.update_or_create(**body)
     serialized = AchievementsSerializer(achievement)
 

@@ -4,12 +4,12 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from achievements.models import Achievements
+from achievements.models import Achievements, Restrictions
 
 
 @pytest.mark.django_db(serialized_rollback=True)
-def test_post_new_achievement():
-    """Create a new achievement."""
+def test_post_new_achievement(create_base_restrictions):
+    """Create a new achievement w/ restriction."""
 
     client = APIClient()
     url = reverse("upsert_achievements")
@@ -45,3 +45,15 @@ def test_post_update_new_achievement():
     assert response.status_code == status.HTTP_201_CREATED
     assert parsed_res["name"] == "Oops all elves"
     assert Achievements.objects.get(id=parsed_res["id"]).name == "Oops all elves"
+
+
+@pytest.mark.django_db(serialized_rollback=True)
+def test_post_empty():
+    """Update an existing achievement."""
+
+    client = APIClient()
+    url = reverse("upsert_achievements")
+    payload = {}
+
+    response = client.post(url, payload, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST

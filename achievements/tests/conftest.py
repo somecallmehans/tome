@@ -3,7 +3,7 @@ from unittest import mock
 from datetime import datetime
 
 
-from achievements.models import Achievements
+from achievements.models import Achievements, Restrictions
 from users.models import Participants
 from sessions_rounds.models import Sessions, Rounds
 
@@ -49,3 +49,12 @@ def create_base_session_and_rounds(mock_date, django_db_setup, django_db_blocker
         r1 = Rounds.objects.create(id=1, session_id=s1, round_number=1)
 
     return s1, r1
+
+
+@pytest.fixture(scope="function")
+def create_base_restrictions(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        re1 = Restrictions.objects.create(name="Once a round")
+        re2 = Restrictions.objects.create(name="Once a session")
+
+    return re1, re2
