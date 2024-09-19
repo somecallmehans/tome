@@ -8,7 +8,7 @@ from achievements.models import Achievements, Restrictions
 
 
 @pytest.mark.django_db(serialized_rollback=True)
-def test_post_new_achievement(create_base_restrictions):
+def test_post_new_achievement():
     """Create a new achievement w/ restriction."""
 
     client = APIClient()
