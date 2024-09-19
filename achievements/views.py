@@ -52,6 +52,12 @@ def post_achievements_for_participants(request):
     round_id = body.get("round", None)
     session_id = body.get("session", None)
 
+    if not round_id or not session_id:
+        return Response(
+            {"message": "Missing round and/or session information"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     achievement_service = AchievementCleaverService(
         participants=participants, round=round_id, session=session_id
     )
