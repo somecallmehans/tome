@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "achievements",
     "sessions_rounds",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "tome.urls"
@@ -74,6 +76,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "tome.wsgi.application"
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_METHODS = ["GET", "OPTIONS", "POST"]
+
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-requested-with",
+]
 
 
 # Database

@@ -48,7 +48,7 @@ def sessions_and_rounds(request):
 
 @api_view(["GET"])
 def sessions_and_rounds_by_date(request):
-    """Get a info for a provided session."""
+    """Get participants total scores by session month."""
 
     mm_yy = request.GET.get("mm_yy")
     participants = get_participants_total_scores(mm_yy=mm_yy)
