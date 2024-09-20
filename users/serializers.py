@@ -3,11 +3,15 @@ from .models import Participants, ParticipantAchievements
 
 
 class ParticipantsSerializer(serializers.ModelSerializer):
-    total_points_current_month = serializers.ReadOnlyField()
+    total_points = serializers.SerializerMethodField()
 
     class Meta:
         model = Participants
-        fields = ["id", "name", "total_points_current_month"]
+        fields = ["id", "name", "total_points"]
+
+    def get_total_points(self, obj):
+        mm_yy = self.context.get("mm_yy", None)
+        return obj.get_total_points(mm_yy)
 
 
 class ParticipantsAchievementsSerializer(serializers.ModelSerializer):

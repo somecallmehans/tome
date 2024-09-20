@@ -8,9 +8,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from .models import Sessions, Rounds
+from users.models import Participants
 
 from .serializers import SessionSerializer
-from .helpers import generate_pods, RoundInformationService
+from .helpers import (
+    generate_pods,
+    get_participants_total_scores,
+    RoundInformationService,
+)
 
 
 POST = "POST"
@@ -41,6 +46,16 @@ def sessions_and_rounds(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(["GET"])
+def sessions_and_rounds_by_date(request):
+    """Get a info for a provided session."""
+
+    mm_yy = request.GET.get("mm_yy")
+    participants = get_participants_total_scores(mm_yy=mm_yy)
+
+    return Response(participants, status=status.HTTP_200_OK)
+
+
 @api_view(["POST"])
 def begin_round(request):
     """Begin a round. Request expects a round_id, session_id, and a list of participants.
@@ -66,9 +81,7 @@ def begin_round(request):
     (
         random.shuffle(all_participants)
         if round.round_number == 1
-        else all_participants.sort(
-            key=lambda x: x["total_points_current_month"], reverse=True
-        )
+        else all_participants.sort(key=lambda x: x["total_points"], reverse=True)
     )
     pods = generate_pods(all_participants)
 

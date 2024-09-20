@@ -25,6 +25,16 @@ def generate_pods(participants):
     return pods
 
 
+def get_participants_total_scores(mm_yy):
+    participants_data = Participants.objects.filter(deleted=False)
+    serialized = ParticipantsSerializer(
+        participants_data, many=True, context={"mm_yy": mm_yy}
+    )
+    participants = [p for p in serialized.data if p["total_points"] is not 0]
+    participants.sort(key=lambda x: x["total_points"], reverse=True)
+    return participants
+
+
 class RoundInformationService:
     def __init__(self, participants, session, round):
         self.participants = participants

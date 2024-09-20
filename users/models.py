@@ -14,9 +14,13 @@ class Participants(models.Model):
         db_table = "participants"
 
     @property
-    def total_points_current_month(self):
-        today = datetime.today()
-        mm_yy = today.strftime("%m-%y")
+    def total_points(self):
+        return self.get_total_points()
+
+    def get_total_points(self, mm_yy=None):
+        if mm_yy is None:
+            today = datetime.today()
+            mm_yy = today.strftime("%m-%y")
 
         total_points = ParticipantAchievements.objects.filter(
             participants=self.id,  # Filter by the current participant

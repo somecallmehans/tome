@@ -125,13 +125,13 @@ def test_post_begin_round_two_session_two(
 
     assert response.status_code == status.HTTP_201_CREATED
     assert parsed_res[0] == [
-        {"id": 3, "name": "Uriel Cohani", "total_points_current_month": 9},
-        {"id": 1, "name": "Glennis Sansam", "total_points_current_month": 7},
-        {"id": 2, "name": "Sara Dewhurst", "total_points_current_month": 6},
-        {"id": 4, "name": "Noella Gannon", "total_points_current_month": 6},
+        {"id": 3, "name": "Uriel Cohani", "total_points": 9},
+        {"id": 1, "name": "Glennis Sansam", "total_points": 7},
+        {"id": 2, "name": "Sara Dewhurst", "total_points": 6},
+        {"id": 4, "name": "Noella Gannon", "total_points": 6},
     ]
     assert parsed_res[1] == [
-        {"id": 12, "name": "Mariana Powys", "total_points_current_month": 3},
-        {"id": 13, "name": "Rock Moulden", "total_points_current_month": 3},
-        {"id": 14, "name": "Ignacio Ranscomb", "total_points_current_month": 3},
+        {"id": 12, "name": "Mariana Powys", "total_points": 3},
+        {"id": 13, "name": "Rock Moulden", "total_points": 3},
+        {"id": 14, "name": "Ignacio Ranscomb", "total_points": 3},
     ]

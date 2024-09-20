@@ -58,7 +58,7 @@ def test_post_begin_round(
     assert response.status_code == status.HTTP_201_CREATED
     assert len(parsed_res[0]) == 4
     assert len(parsed_res[1]) == 3
-    assert parsed_res[0][0]["total_points_current_month"] == 3
+    assert parsed_res[0][0]["total_points"] == 3
 
 
 def pod_factory(pods):
