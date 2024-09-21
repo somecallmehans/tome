@@ -53,6 +53,9 @@ def test_get_session_info_by_mm_yy(create_base_participants):
     all_artifacts = Achievements.objects.create(
         id=3, name="All Artifacts", point_value=2, parent_id=None
     )
+    artifacts_child = Achievements.objects.create(
+        id=10, name="Artifacts Child", point_value=None, parent=all_artifacts
+    )
 
     # Everyone gets participation
     for p in participants:
@@ -142,7 +145,18 @@ def test_get_session_info_by_mm_yy(create_base_participants):
         achievement=win,
         participant=participants[0],
     )
+    participant_achievement_factory(
+        session=old_sesh_3,
+        round=round_two_lookup[old_sesh_3.id],
+        achievement=artifacts_child,
+        participant=participants[0],
+    )
 
     res = client.get(url, query_params)
-
     assert res.status_code == status.HTTP_200_OK
+    assert res.json() == [
+        {"id": 4, "name": "Noella Gannon", "total_points": 15},
+        {"id": 1, "name": "Glennis Sansam", "total_points": 13},
+        {"id": 3, "name": "Uriel Cohani", "total_points": 13},
+        {"id": 2, "name": "Sara Dewhurst", "total_points": 11},
+    ]

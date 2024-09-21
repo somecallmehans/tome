@@ -14,9 +14,15 @@ class Restrictions(models.Model):
 class Achievements(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    point_value = models.IntegerField()
+    point_value = models.IntegerField(null=True, blank=True)
     deleted = models.BooleanField(default=False)
-    parent_id = models.IntegerField(null=True)
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="children",
+    )
 
     restrictions = models.ManyToManyField(
         "Restrictions", through="AchievementsRestrictions"

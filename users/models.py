@@ -23,9 +23,24 @@ class Participants(models.Model):
             mm_yy = today.strftime("%m-%y")
 
         total_points = ParticipantAchievements.objects.filter(
-            participants=self.id,  # Filter by the current participant
-            sessions__month_year=mm_yy,  # Filter by current session's month-year
-        ).aggregate(total_points=models.Sum("achievements__point_value"))[
+            participants=self.id,
+            sessions__month_year=mm_yy,
+        ).aggregate(
+            total_points=models.Sum(
+                models.Case(
+                    models.When(
+                        achievements__point_value__isnull=False,
+                        then="achievements__point_value",
+                    ),
+                    models.When(
+                        achievements__point_value__isnull=True,
+                        then="achievements__parent__point_value",
+                    ),
+                    default=0,
+                    output_field=models.IntegerField(),
+                )
+            )
+        )[
             "total_points"
         ]
         return total_points if total_points is not None else 0
