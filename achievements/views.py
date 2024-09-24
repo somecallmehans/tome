@@ -6,14 +6,15 @@ from rest_framework.decorators import api_view
 from .models import Achievements
 from .serializers import AchievementsSerializer
 
-from achievements.helpers import AchievementCleaverService
+from achievements.helpers import AchievementCleaverService, make_achievement_map
 
 
 @api_view(["GET"])
 def get_achievements_with_restrictions(request):
     achievements = Achievements.objects.prefetch_related("restrictions")
     serializer = AchievementsSerializer(achievements, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    map = make_achievement_map(serializer.data)
+    return Response(map, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

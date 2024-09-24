@@ -40,3 +40,27 @@ class AchievementCleaverService:
                     sessions=self.session,
                     rounds=self.round,
                 )
+
+
+def make_achievement_map(achievements):
+    achievement_map = {}
+    for achievement in achievements:
+        if achievement["parent"] is None:
+            achievement_with_children = {
+                **achievement,
+                "children": [],
+            }
+            point_value = achievement["point_value"]
+            if point_value not in achievement_map:
+                achievement_map[point_value] = []
+
+            achievement_map[point_value].append(achievement_with_children)
+        else:
+            parent_achievement = achievement["parent"]
+
+            parent_point_value = parent_achievement["point_value"]
+            for parent in achievement_map.get(parent_point_value, []):
+                if parent["id"] == parent_achievement["id"]:
+                    parent["children"].append(achievement)
+
+    return achievement_map
