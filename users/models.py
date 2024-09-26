@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
 from sessions_rounds.models import Rounds, Sessions
 from achievements.models import Achievements
 
@@ -54,3 +56,18 @@ class ParticipantAchievements(models.Model):
 
     class Meta:
         db_table = "participant_achievements"
+
+
+class Users(models.Model):
+
+    username = None
+    name = models.CharField(max_length=100, unique=True)
+    email = models.EmailField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    admin = models.BooleanField(default=False)
+    deleted = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+    password = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = "users"
