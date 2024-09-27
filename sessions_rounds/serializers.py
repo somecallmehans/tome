@@ -5,7 +5,7 @@ from .models import Sessions, Rounds
 class RoundsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rounds
-        fields = ["id", "round_number", "closed", "deleted"]
+        fields = ["id", "round_number", "completed", "deleted"]
 
 
 class SessionSerializer(serializers.ModelSerializer):

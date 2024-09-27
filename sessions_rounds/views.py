@@ -8,7 +8,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from .models import Sessions, Rounds
-from users.models import Participants
 
 from .serializers import SessionSerializer
 from .helpers import (
@@ -19,6 +18,16 @@ from .helpers import (
 
 
 POST = "POST"
+
+
+@api_view(["GET"])
+def all_sessions(request):
+    """Get all sessions that are not deleted, including their rounds info."""
+    sessions = Sessions.objects.filter(deleted=False)
+    breakpoint()
+    serializer = SessionSerializer(sessions, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST"])

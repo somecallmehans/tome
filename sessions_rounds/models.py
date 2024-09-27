@@ -17,10 +17,10 @@ class RoundOptions(models.IntegerChoices):
 
 
 class Rounds(models.Model):
-    session_id = models.ForeignKey(Sessions, on_delete=models.CASCADE)
+    session = models.ForeignKey(Sessions, on_delete=models.CASCADE)
     round_number = models.IntegerField(choices=RoundOptions.choices)
     created_at = models.DateTimeField(auto_now_add=True)
-    closed = models.BooleanField(default=False)
+    completed = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
 
     class Meta:

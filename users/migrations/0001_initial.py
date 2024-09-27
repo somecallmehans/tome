@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("achievements", "0005_alter_achievements_parent"),
-        ("sessions_rounds", "0001_initial"),
     ]
 
     operations = [
