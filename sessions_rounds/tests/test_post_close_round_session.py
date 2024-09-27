@@ -32,7 +32,7 @@ def test_post_close_round_one(create_base_session_and_rounds):
     round_test = Rounds.objects.get(id=rounds.data[0]["id"])
     session_test = Sessions.objects.get(id=sessions.data[0]["id"])
     assert response.status_code == status.HTTP_201_CREATED
-    assert round_test.closed == True
+    assert round_test.completed == True
     assert session_test.closed == False
 
 
@@ -60,7 +60,7 @@ def test_post_close_round_two_and_session(create_base_session_and_rounds):
     round_test = Rounds.objects.get(id=rounds.data[1]["id"])
     session_test = Sessions.objects.get(id=sessions.data[0]["id"])
     assert response.status_code == status.HTTP_201_CREATED
-    assert round_test.closed == True
+    assert round_test.completed == True
     assert session_test.closed == True
 
 

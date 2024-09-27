@@ -26,7 +26,7 @@ class PodsSerializer(serializers.ModelSerializer):
 
 
 class PodsParticipantsSerializer(serializers.ModelSerializer):
-    pods = PodsSerializer(read_only=True)
+    pods = serializers.PrimaryKeyRelatedField(read_only=True)
     participants = ParticipantsSerializer(read_only=True)
 
     class Meta:

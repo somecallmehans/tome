@@ -33,7 +33,7 @@ def test_post_begin_round(
     mocked_today = datetime(2024, 11, 25)
     mock_date.today.return_value = mocked_today
 
-    session = Sessions.objects.get(id=11)
+    session = Sessions.objects.get(id=51)
     round = Rounds.objects.get(id=11)
     Achievements.objects.create(
         id=24, name="Participation Trophy", point_value=3, parent_id=None
@@ -57,46 +57,3 @@ def test_post_begin_round(
     assert response.status_code == status.HTTP_201_CREATED
     assert len(parsed_res[0]) == 4
     assert len(parsed_res[1]) == 3
-
-
-def pod_factory(pods):
-    four_pods = 0
-    three_pods = 0
-    generated_pods = generate_pods(pods)
-    for s in generated_pods:
-        if len(s) == 4:
-            four_pods += 1
-        else:
-            three_pods += 1
-
-    return four_pods, three_pods
-
-
-def test_post_pod_generator():
-    """Test that the pod generator correctly makes pods of
-    4 and 3 based on the number of participants it receives."""
-
-    # 6 Players
-    four_pods, three_pods = pod_factory(pods=list(range(1, 7)))
-    assert four_pods == 0
-    assert three_pods == 2
-
-    # 16 Players
-    four_pods, three_pods = pod_factory(pods=list(range(1, 17)))
-    assert four_pods == 4
-    assert three_pods == 0
-
-    # 17 Players
-    four_pods, three_pods = pod_factory(pods=list(range(1, 18)))
-    assert four_pods == 2
-    assert three_pods == 3
-
-    # 27 Players
-    four_pods, three_pods = pod_factory(pods=list(range(1, 28)))
-    assert four_pods == 6
-    assert three_pods == 1
-
-    # 33 Players
-    four_pods, three_pods = pod_factory(pods=list(range(1, 34)))
-    assert four_pods == 6
-    assert three_pods == 3

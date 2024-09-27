@@ -38,8 +38,8 @@ def sessions_and_rounds(request):
 
     if request.method == POST:
         new_session = Sessions.objects.create(month_year=mm_yy)
-        Rounds.objects.create(session_id=new_session, round_number=1)
-        Rounds.objects.create(session_id=new_session, round_number=2)
+        Rounds.objects.create(session_id=new_session.id, round_number=1)
+        Rounds.objects.create(session_id=new_session.id, round_number=2)
         serializer = SessionSerializer(new_session)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -117,7 +117,7 @@ def close_round(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    Rounds.objects.filter(id=round["id"]).update(closed=True)
+    Rounds.objects.filter(id=round["id"]).update(completed=True)
 
     if round["round_number"] != 1:
         Sessions.objects.filter(id=session_id).update(closed=True)

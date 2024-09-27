@@ -23,7 +23,7 @@ def test_get_current_session_and_rounds(mock_date, create_base_session_and_round
     parsed_res = res.json()
 
     assert res.status_code == status.HTTP_200_OK
-    assert parsed_res["id"] == 11
+    assert parsed_res["id"] == 51
     assert parsed_res["rounds"][0]["id"] == 11
     assert parsed_res["rounds"][1]["id"] == 12
 

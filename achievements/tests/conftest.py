@@ -46,7 +46,7 @@ def create_base_session_and_rounds(mock_date, django_db_setup, django_db_blocker
 
     with django_db_blocker.unblock():
         s1 = Sessions.objects.create(id=1, month_year=mocked_mmyy, closed=False)
-        r1 = Rounds.objects.create(id=1, session_id=s1, round_number=1)
+        r1 = Rounds.objects.create(id=1, session_id=s1.id, round_number=1)
 
     return s1, r1
 

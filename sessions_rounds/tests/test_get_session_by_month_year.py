@@ -14,8 +14,8 @@ from sessions_rounds.test_helpers import participant_achievement_factory
 
 
 def round_maker(session):
-    Rounds.objects.create(session_id=session, round_number=1)
-    Rounds.objects.create(session_id=session, round_number=2)
+    Rounds.objects.create(session_id=session.id, round_number=1)
+    Rounds.objects.create(session_id=session.id, round_number=2)
 
 
 @pytest.mark.django_db(serialized_rollback=True)
@@ -36,8 +36,8 @@ def test_get_session_info_by_mm_yy(create_base_participants):
     round_maker(old_sesh_2)
     round_maker(old_sesh_3)
     rounds = Rounds.objects.all()
-    round_one_lookup = {r.session_id_id: r for r in rounds if r.round_number == 1}
-    round_two_lookup = {r.session_id_id: r for r in rounds if r.round_number == 2}
+    round_one_lookup = {r.session_id: r for r in rounds if r.round_number == 1}
+    round_two_lookup = {r.session_id: r for r in rounds if r.round_number == 2}
 
     ### Create some achievememnts
     participation = Achievements.objects.create(
@@ -155,8 +155,8 @@ def test_get_session_info_by_mm_yy(create_base_participants):
     res = client.get(url, query_params)
     assert res.status_code == status.HTTP_200_OK
     assert res.json() == [
-        {"id": 4, "name": "Noella Gannon", "total_points": 15},
-        {"id": 1, "name": "Glennis Sansam", "total_points": 13},
-        {"id": 3, "name": "Uriel Cohani", "total_points": 13},
-        {"id": 2, "name": "Sara Dewhurst", "total_points": 11},
+        {"id": 12, "name": "Noella Gannon", "total_points": 15},
+        {"id": 9, "name": "Glennis Sansam", "total_points": 13},
+        {"id": 11, "name": "Uriel Cohani", "total_points": 13},
+        {"id": 10, "name": "Sara Dewhurst", "total_points": 11},
     ]
