@@ -24,10 +24,17 @@ POST = "POST"
 def all_sessions(request):
     """Get all sessions that are not deleted, including their rounds info."""
     sessions = Sessions.objects.filter(deleted=False)
-    breakpoint()
-    serializer = SessionSerializer(sessions, many=True)
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    data = SessionSerializer(sessions, many=True).data
+
+    session_map = {}
+    for session in data:
+        mm_yy = session["month_year"]
+        if session_map.get(mm_yy, None) is None:
+            session_map[session["month_year"]] = []
+        session_map[mm_yy].append(session)
+
+    return Response(session_map, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST"])

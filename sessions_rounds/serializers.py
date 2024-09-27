@@ -14,7 +14,7 @@ class SessionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sessions
-        fields = ["id", "month_year", "closed", "deleted", "rounds"]
+        fields = ["id", "month_year", "closed", "deleted", "created_at", "rounds"]
 
 
 class PodsSerializer(serializers.ModelSerializer):
