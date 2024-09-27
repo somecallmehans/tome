@@ -45,7 +45,6 @@ def test_post_begin_round(
     p_data = Participants.objects.all()
     p_serialized = ParticipantsSerializer(p_data, many=True)
     p_to_send = [{"id": p["id"], "name": p["name"]} for p in p_serialized.data]
-
     payload = {
         "round": round_serializer.data["id"],
         "session": session_serializer.data["id"],
@@ -58,7 +57,6 @@ def test_post_begin_round(
     assert response.status_code == status.HTTP_201_CREATED
     assert len(parsed_res[0]) == 4
     assert len(parsed_res[1]) == 3
-    assert parsed_res[0][0]["total_points"] == 3
 
 
 def pod_factory(pods):

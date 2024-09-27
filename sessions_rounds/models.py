@@ -25,3 +25,19 @@ class Rounds(models.Model):
 
     class Meta:
         db_table = "rounds"
+
+
+class Pods(models.Model):
+    rounds = models.ForeignKey(Rounds, on_delete=models.CASCADE)
+    deleted = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "pods"
+
+
+class PodsParticipants(models.Model):
+    pods = models.ForeignKey(Pods, on_delete=models.CASCADE)
+    participants = models.ForeignKey("users.Participants", on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "pods_participants"

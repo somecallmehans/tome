@@ -1,11 +1,12 @@
 from users.models import Participants, ParticipantAchievements
 from users.serializers import ParticipantsSerializer, ParticipantsAchievementsSerializer
 from achievements.models import Achievements
+from sessions_rounds.models import Pods, PodsParticipants
 
 PARTICIPATION_ACHIEVEMENT_ID = 24
 
 
-def generate_pods(participants):
+def generate_pods(participants, round):
     """Generate pods of 4 or 3"""
     length = len(participants)
     if length in {1, 2, 5}:
@@ -22,7 +23,15 @@ def generate_pods(participants):
             pods.append(mutate_ids[:3])
             mutate_ids = mutate_ids[3:]
             length -= 3
-    return pods
+
+    pods_to_return = []
+    for pod in pods:
+        new_pod = Pods.objects.create(rounds=round)
+        pods_to_return.append(
+            [PodsParticipants.objects.create(pods=new_pod, participants=x) for x in pod]
+        )
+
+    return pods_to_return
 
 
 def get_participants_total_scores(mm_yy):
@@ -128,6 +137,6 @@ class RoundInformationService:
 
         self.create_participation_achievements()
 
-        self.get_participants_serialized()
+        # self.get_participants_serialized()
 
-        return self.all_participants
+        return self.participant_data

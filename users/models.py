@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
 from sessions_rounds.models import Rounds, Sessions
 from achievements.models import Achievements

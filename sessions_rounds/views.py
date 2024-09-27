@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 
 from .models import Sessions, Rounds
 
-from .serializers import SessionSerializer
+from .serializers import SessionSerializer, PodsParticipantsSerializer
 from .helpers import (
     generate_pods,
     get_participants_total_scores,
@@ -86,15 +86,19 @@ def begin_round(request):
         participants=participants, session=session, round=round
     )
 
-    all_participants = round_service.build_participants_and_achievements()
+    all_participants = list(round_service.build_participants_and_achievements())
+
     (
         random.shuffle(all_participants)
         if round.round_number == 1
-        else all_participants.sort(key=lambda x: x["total_points"], reverse=True)
+        else list(all_participants).sort(key=lambda x: x.total_points, reverse=True)
     )
-    pods = generate_pods(all_participants)
-
-    return Response(pods, status=status.HTTP_201_CREATED)
+    pods = generate_pods(participants=all_participants, round=round)
+    serialized_data = [
+        PodsParticipantsSerializer(pods_participant, many=True).data
+        for pods_participant in pods
+    ]
+    return Response(serialized_data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["POST"])
