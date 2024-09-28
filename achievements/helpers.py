@@ -35,10 +35,10 @@ class AchievementCleaverService:
         for item in self.participants:
             for achievement in item["achievements"]:
                 ParticipantAchievements.objects.create(
-                    participants=self.participants_lookup[item["participant"]],
-                    achievements=self.achievements_lookup[achievement],
-                    sessions=self.session,
-                    rounds=self.round,
+                    participant=self.participants_lookup[item["participant"]],
+                    achievement=self.achievements_lookup[achievement],
+                    session=self.session,
+                    round=self.round,
                 )
 
 

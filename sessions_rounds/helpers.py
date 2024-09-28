@@ -98,13 +98,13 @@ class RoundInformationService:
     def get_session_achievement_data(self):
         """Get achievement data for the current session."""
         achievement_data = ParticipantAchievements.objects.filter(
-            sessions_id=self.session.id, achievements_id=PARTICIPATION_ACHIEVEMENT_ID
+            session_id=self.session.id, achievement_id=PARTICIPATION_ACHIEVEMENT_ID
         )
         earned_participation_achievements = ParticipantsAchievementsSerializer(
             achievement_data, many=True
         )
         self.earned_participation_set = {
-            ea["participants"] for ea in earned_participation_achievements.data
+            ea["participant"] for ea in earned_participation_achievements.data
         }
 
     def create_participation_achievements(self):
@@ -115,10 +115,10 @@ class RoundInformationService:
             if ep["id"] not in self.earned_participation_set:
                 new_achievements.append(
                     ParticipantAchievements(
-                        participants=self.participant_lookup[ep["id"]],
-                        rounds=self.round,
-                        sessions=self.session,
-                        achievements=self.participation_achievement,
+                        participant=self.participant_lookup[ep["id"]],
+                        round=self.round,
+                        session=self.session,
+                        achievement=self.participation_achievement,
                     )
                 )
         if len(new_achievements):
