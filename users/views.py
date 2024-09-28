@@ -12,7 +12,7 @@ from .serializers import ParticipantsSerializer
 
 
 @api_view(["GET"])
-def get_all_participants():
+def get_all_participants(request):
     participants = Participants.objects.all().filter(deleted=False)
     serializer = ParticipantsSerializer(participants, many=True)
     return Response(serializer.data)

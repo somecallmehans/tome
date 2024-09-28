@@ -24,18 +24,18 @@ class Participants(models.Model):
             mm_yy = today.strftime("%m-%y")
 
         total_points = ParticipantAchievements.objects.filter(
-            participants=self.id,
-            sessions__month_year=mm_yy,
+            participant=self.id,
+            session__month_year=mm_yy,
         ).aggregate(
             total_points=models.Sum(
                 models.Case(
                     models.When(
-                        achievements__point_value__isnull=False,
-                        then="achievements__point_value",
+                        achievement__point_value__isnull=False,
+                        then="achievement__point_value",
                     ),
                     models.When(
-                        achievements__point_value__isnull=True,
-                        then="achievements__parent__point_value",
+                        achievement__point_value__isnull=True,
+                        then="achievement__parent__point_value",
                     ),
                     default=0,
                     output_field=models.IntegerField(),
@@ -48,10 +48,10 @@ class Participants(models.Model):
 
 
 class ParticipantAchievements(models.Model):
-    participants = models.ForeignKey(Participants, on_delete=models.CASCADE)
-    achievements = models.ForeignKey(Achievements, on_delete=models.CASCADE)
-    rounds = models.ForeignKey(Rounds, on_delete=models.CASCADE)
-    sessions = models.ForeignKey(Sessions, on_delete=models.CASCADE)
+    participant = models.ForeignKey(Participants, on_delete=models.CASCADE)
+    achievement = models.ForeignKey(Achievements, on_delete=models.CASCADE)
+    round = models.ForeignKey(Rounds, on_delete=models.CASCADE)
+    session = models.ForeignKey(Sessions, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "participant_achievements"

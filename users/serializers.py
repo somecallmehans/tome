@@ -15,11 +15,11 @@ class ParticipantsSerializer(serializers.ModelSerializer):
 
 
 class ParticipantsAchievementsSerializer(serializers.ModelSerializer):
-    participants = serializers.PrimaryKeyRelatedField(read_only=True)
-    sessions = serializers.PrimaryKeyRelatedField(read_only=True)
-    rounds = serializers.PrimaryKeyRelatedField(read_only=True)
-    achievements = serializers.PrimaryKeyRelatedField(read_only=True)
+    participant = serializers.PrimaryKeyRelatedField(read_only=True)
+    session = serializers.PrimaryKeyRelatedField(read_only=True)
+    round = serializers.PrimaryKeyRelatedField(read_only=True)
+    achievement = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = ParticipantAchievements
-        fields = ["id", "participants", "achievements", "rounds", "sessions"]
+        fields = ["id", "participant", "achievement", "round", "session"]
