@@ -5,6 +5,7 @@ from .views import (
     close_round,
     sessions_and_rounds_by_date,
     all_sessions,
+    get_pods,
 )
 
 urlpatterns = [
@@ -13,6 +14,7 @@ urlpatterns = [
         sessions_and_rounds_by_date,
         name="sessions-and-rounds-by-date",
     ),
+    path("pods/<int:round>/", get_pods, name="pods"),
     path("all_sessions/", all_sessions, name="all_sessions"),
     path("sessions/", sessions_and_rounds, name="make_sessions_and_rounds"),
     path("begin_round/", begin_round, name="begin_round"),

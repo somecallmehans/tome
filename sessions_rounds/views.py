@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from .models import Sessions, Rounds
+from .models import Sessions, Rounds, Pods, PodsParticipants
 
 from .serializers import SessionSerializer, PodsParticipantsSerializer
 from .helpers import (
@@ -109,6 +109,27 @@ def begin_round(request):
         for pods_participant in pods
     ]
     return Response(serialized_data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["GET"])
+def get_pods(_, round):
+    """Get the pods that were made for a given round."""
+    all_pods = Pods.objects.filter(rounds_id=round)
+    pods_participants = PodsParticipants.objects.filter(
+        pods_id__in=[x.id for x in all_pods]
+    )
+
+    serialized_data = PodsParticipantsSerializer(pods_participants, many=True).data
+
+    pod_map = {}
+
+    for pod in serialized_data:
+        pod_id = pod["pods"]
+        if pod_map.get(pod_id, None) is None:
+            pod_map[pod_id] = []
+        pod_map[pod_id].append(pod)
+
+    return Response(pod_map, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
