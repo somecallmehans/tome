@@ -28,6 +28,9 @@ def all_sessions(request):
     data = SessionSerializer(sessions, many=True).data
 
     session_map = {}
+
+    # this sort is probably not needed once things get rolling for real
+    data.sort(reverse=True, key=lambda x: x["created_at"])
     for session in data:
         mm_yy = session["month_year"]
         if session_map.get(mm_yy, None) is None:
