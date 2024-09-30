@@ -140,9 +140,9 @@ def close_round(request):
     If the received round is a second round, also flip the session flag to true."""
     body = json.loads(request.body.decode("utf-8"))
     round = body.get("round", None)
-    session_id = body.get("session", None)
+    session = body.get("session", None)
 
-    if not round or not session_id:
+    if not round or not session:
         return Response(
             {"message": "Session/Round information not provided"},
             status=status.HTTP_400_BAD_REQUEST,
@@ -151,6 +151,6 @@ def close_round(request):
     Rounds.objects.filter(id=round["id"]).update(completed=True)
 
     if round["round_number"] != 1:
-        Sessions.objects.filter(id=session_id).update(closed=True)
+        Sessions.objects.filter(id=session).update(closed=True)
 
     return Response(status=status.HTTP_201_CREATED)

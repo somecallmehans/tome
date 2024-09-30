@@ -18,5 +18,5 @@ urlpatterns = [
     path("all_sessions/", all_sessions, name="all_sessions"),
     path("sessions/", sessions_and_rounds, name="make_sessions_and_rounds"),
     path("begin_round/", begin_round, name="begin_round"),
-    path("close_round", close_round, name="close_round"),
+    path("close_round/", close_round, name="close_round"),
 ]
