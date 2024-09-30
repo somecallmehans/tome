@@ -122,12 +122,12 @@ def get_pods(_, round):
     serialized_data = PodsParticipantsSerializer(pods_participants, many=True).data
 
     pod_map = {}
-
     for pod in serialized_data:
-        pod_id = pod["pods"]
+        pod_id = pod["pods"]["id"]
+        submitted = pod["pods"]["submitted"]
         if pod_map.get(pod_id, None) is None:
-            pod_map[pod_id] = []
-        pod_map[pod_id].append(pod)
+            pod_map[pod_id] = {"id": pod_id, "submitted": submitted, "pods": []}
+        pod_map[pod_id]["pods"].append(pod)
 
     return Response(pod_map, status=status.HTTP_200_OK)
 

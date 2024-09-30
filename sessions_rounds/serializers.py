@@ -22,11 +22,11 @@ class PodsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pods
-        fields = ["id", "rounds"]
+        fields = ["id", "rounds", "submitted"]
 
 
 class PodsParticipantsSerializer(serializers.ModelSerializer):
-    pods = serializers.PrimaryKeyRelatedField(read_only=True)
+    pods = PodsSerializer(read_only=True)
     participants = ParticipantsSerializer(read_only=True)
 
     class Meta:

@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Achievements
+from sessions_rounds.models import Pods
 from .serializers import AchievementsSerializer
 
 from achievements.helpers import AchievementCleaverService, make_achievement_map
@@ -51,8 +52,9 @@ def post_achievements_for_participants(request):
     participants = body.get("participants", None)
     round_id = body.get("round", None)
     session_id = body.get("session", None)
+    pod_id = body.get("pod", None)
 
-    if not round_id or not session_id:
+    if not round_id or not session_id or not pod_id:
         return Response(
             {"message": "Missing round and/or session information"},
             status=status.HTTP_400_BAD_REQUEST,
@@ -62,4 +64,5 @@ def post_achievements_for_participants(request):
         participants=participants, round=round_id, session=session_id
     )
     achievement_service.build_service()
+    Pods.objects.filter(id=pod_id).update(submitted=True)
     return Response(status=status.HTTP_201_CREATED)
