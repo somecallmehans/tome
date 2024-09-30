@@ -30,6 +30,7 @@ class Rounds(models.Model):
 class Pods(models.Model):
     rounds = models.ForeignKey(Rounds, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
+    submitted = models.BooleanField(default=False)
 
     class Meta:
         db_table = "pods"

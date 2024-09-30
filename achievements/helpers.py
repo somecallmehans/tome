@@ -19,7 +19,7 @@ class AchievementCleaverService:
     def create_participants_lookup(self):
         """Get the participant data and make a lookup."""
         participant_data = Participants.objects.filter(
-            id__in=[p["participant"] for p in self.participants]
+            id__in=[p["id"] for p in self.participants]
         )
         self.participants_lookup = {p.id: p for p in participant_data}
 
@@ -35,7 +35,7 @@ class AchievementCleaverService:
         for item in self.participants:
             for achievement in item["achievements"]:
                 ParticipantAchievements.objects.create(
-                    participant=self.participants_lookup[item["participant"]],
+                    participant=self.participants_lookup[item["id"]],
                     achievement=self.achievements_lookup[achievement],
                     session=self.session,
                     round=self.round,
