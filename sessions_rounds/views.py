@@ -101,7 +101,7 @@ def begin_round(request):
     (
         random.shuffle(all_participants)
         if round.round_number == 1
-        else list(all_participants).sort(key=lambda x: x.total_points, reverse=True)
+        else all_participants.sort(key=lambda x: x.total_points, reverse=True)
     )
     pods = generate_pods(participants=all_participants, round=round)
     serialized_data = [
