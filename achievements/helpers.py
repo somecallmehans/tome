@@ -1,15 +1,21 @@
-from achievements.models import Achievements
+from achievements.models import Achievements, WinningCommanders, Colors
 from users.models import Participants, ParticipantAchievements
-from sessions_rounds.models import Sessions, Rounds
+from sessions_rounds.models import Sessions, Rounds, Pods
 
 
 class AchievementCleaverService:
-    def __init__(self, participants, session, round):
+    def __init__(self, participants, session, round, pod_id, winner_info):
         self.participants = participants
         self.session = Sessions.objects.get(id=session)
         self.round = Rounds.objects.get(id=round)
         self.achievements_lookup = {}
         self.participants_lookup = {}
+        self.winner_info = {
+            "commander": winner_info["commander_name"],
+            "color": Colors.objects.get(id=winner_info["color_id"]),
+            "winner": Participants.objects.get(id=winner_info["winner_id"]),
+            "pod": Pods.objects.get(id=pod_id),
+        }
 
     def create_achievements_lookup(self):
         """Get all the achievements, make a lookup."""
@@ -40,6 +46,12 @@ class AchievementCleaverService:
                     session=self.session,
                     round=self.round,
                 )
+        WinningCommanders.objects.create(
+            name=self.winner_info["commander"],
+            colors=self.winner_info["color"],
+            participants=self.winner_info["winner"],
+            pods=self.winner_info["pod"],
+        )
 
 
 def make_achievement_map(achievements):

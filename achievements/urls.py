@@ -3,6 +3,7 @@ from .views import (
     get_achievements_with_restrictions,
     post_achievements_for_participants,
     upsert_achievements,
+    get_colors,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
         get_achievements_with_restrictions,
         name="achievements_restrictions_list",
     ),
+    path("colors/", get_colors, name="colors"),
 ]
