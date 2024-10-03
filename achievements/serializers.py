@@ -19,7 +19,6 @@ class AchievementsSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "description",
             "point_value",
             "parent",
             "restrictions",

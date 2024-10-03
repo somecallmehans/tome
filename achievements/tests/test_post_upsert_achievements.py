@@ -16,7 +16,6 @@ def test_post_new_achievement():
 
     payload = {
         "name": "Oops all soldiers",
-        "description": "66 SOLDIERS",
         "point_value": 100,
     }
 
@@ -36,7 +35,6 @@ def test_post_update_new_achievement():
     payload = {
         "id": 1,
         "name": "Oops all elves",
-        "description": "66 ELVES",
         "point_value": 6,
     }
 

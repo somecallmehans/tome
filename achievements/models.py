@@ -13,7 +13,6 @@ class Restrictions(models.Model):
 
 class Achievements(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
     point_value = models.IntegerField(null=True, blank=True)
     deleted = models.BooleanField(default=False)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)

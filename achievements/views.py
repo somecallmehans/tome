@@ -33,7 +33,9 @@ def get_colors(request):
 def upsert_achievements(request):
     body = json.loads(request.body.decode("utf-8"))
     id = body.get("id", None)
+    deleted = body.get("deleted", None)
     point_value = body.get("point_value", None)
+    parent_id = body.get("parent_id", None)
     name = body.get("name", None)
 
     if id is None and (point_value is None or name is None):
@@ -44,7 +46,15 @@ def upsert_achievements(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    achievement, _ = Achievements.objects.update_or_create(**body)
+    achievement, _ = Achievements.objects.update_or_create(
+        id=(id if id else None),
+        defualts={
+            "name": name or None,
+            "deleted": deleted or False,
+            "point_value": point_value,
+            "parent_id": parent_id,
+        },
+    )
     serialized = AchievementsSerializer(achievement)
 
     return Response(serialized.data, status=status.HTTP_201_CREATED)
