@@ -23,6 +23,7 @@ def upsert_participant(request):
     body = json.loads(request.body.decode("utf-8"))
     id = body.get("id", None)
     name = body.get("name", None)
+    deleted = body.get("deleted", None)
 
     if not id and not name:
         return Response(
@@ -30,7 +31,10 @@ def upsert_participant(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    participant, _ = Participants.objects.update_or_create(**body)
+    participant, _ = Participants.objects.update_or_create(
+        id=(id if id else None),
+        defaults={"name": name, "deleted": deleted or False},
+    )
     serializer = ParticipantsSerializer(participant)
 
     return Response(serializer.data, status=status.HTTP_201_CREATED)
