@@ -40,7 +40,7 @@ def upsert_achievements(request):
     parent_id = body.get("parent_id", None)
     name = body.get("name", None)
 
-    if id is None and (point_value is None or name is None):
+    if name is None:
         return Response(
             {
                 "message": "Information to create/update achievement missing from request body."
@@ -57,8 +57,10 @@ def upsert_achievements(request):
             "parent_id": parent_id,
         },
     )
-    serialized = AchievementsSerializer(achievement)
+    if achievement.deleted:
+        return Response(status=status.HTTP_201_CREATED)
 
+    serialized = AchievementsSerializer(achievement)
     return Response(serialized.data, status=status.HTTP_201_CREATED)
 
 
