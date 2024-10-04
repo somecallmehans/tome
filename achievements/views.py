@@ -12,7 +12,9 @@ from achievements.helpers import AchievementCleaverService, make_achievement_map
 
 @api_view(["GET"])
 def get_achievements_with_restrictions(request):
-    achievements = Achievements.objects.prefetch_related("restrictions")
+    achievements = Achievements.objects.filter(deleted=False).prefetch_related(
+        "restrictions"
+    )
     serializer = AchievementsSerializer(achievements, many=True).data
     map = make_achievement_map(serializer)
     return Response({"map": map, "data": serializer}, status=status.HTTP_200_OK)
@@ -48,10 +50,10 @@ def upsert_achievements(request):
 
     achievement, _ = Achievements.objects.update_or_create(
         id=(id if id else None),
-        defualts={
+        defaults={
             "name": name or None,
             "deleted": deleted or False,
-            "point_value": point_value,
+            "point_value": point_value or None,
             "parent_id": parent_id,
         },
     )
