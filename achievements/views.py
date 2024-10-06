@@ -1,11 +1,16 @@
 import json
 
+from collections import defaultdict
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Achievements, Colors
+from users.models import ParticipantAchievements
 from sessions_rounds.models import Pods
+from sessions_rounds.serializers import RoundsSerializer
 from .serializers import AchievementsSerializer, ColorsSerializer
+from users.serializers import ParticipantsSerializer
 
 from achievements.helpers import AchievementCleaverService, make_achievement_map
 
@@ -18,6 +23,37 @@ def get_achievements_with_restrictions(request):
     serializer = AchievementsSerializer(achievements, many=True).data
     map = make_achievement_map(serializer)
     return Response({"map": map, "data": serializer}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_achievements_by_participant_session(_, session_id):
+    """Get all the achievements earned by participants for a given session."""
+
+    data = ParticipantAchievements.objects.filter(session=session_id).select_related(
+        "participant", "achievement", "round"
+    )
+
+    achievements_by_participant = defaultdict(list)
+    for pa in data:
+        achievements_by_participant[pa.participant].append(
+            {"achievement": pa.achievement, "round": pa.round, "earned_id": pa.id}
+        )
+
+    result = []
+    for participant, achievements in achievements_by_participant.items():
+        participant_data = ParticipantsSerializer(participant).data
+        achievements_data = [
+            {
+                **AchievementsSerializer(achievement["achievement"]).data,
+                "round": RoundsSerializer(achievement["round"]).data,
+                "earned_id": achievement["earned_id"],
+            }
+            for achievement in achievements
+        ]
+        participant_data["achievements"] = achievements_data
+        result.append(participant_data)
+
+    return Response(result, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -96,3 +132,49 @@ def post_achievements_for_participants(request):
     achievement_service.build_service()
     Pods.objects.filter(id=pod_id).update(submitted=True)
     return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+def upsert_participant_achievements(request):
+    """Update the achievement for a given round/session."""
+    body = json.loads(request.body.decode("utf-8"))
+    earned_id = body.get("earned_id", None)
+    achievement = body.get("achievement", None)
+    participant = body.get("participants", None)
+    round = body.get("round", None)
+    session = body.get("session", None)
+    # deleted = body.get("deleted", None)
+
+    if earned_id:
+        try:
+            pa = ParticipantAchievements.objects.get(id=earned_id)
+            if achievement:
+                pa.achievement_id = achievement
+            if participant:
+                pa.participant_id = participant
+            if round:
+                pa.round_id = round
+            if session:
+                pa.session_id = session
+
+            pa.save()
+            return Response(
+                {"message": "Updated successfully"},
+                status=status.HTTP_200_OK,
+            )
+        except ParticipantAchievements.DoesNotExist:
+            return Response(
+                {"message": "ParticipantAchievement object not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    new_entry = ParticipantAchievements.objects.create(
+        achievement_id=achievement,
+        participant_id=participant,
+        round_id=round,
+        session_id=session,
+    )
+    return Response(
+        new_entry,
+        status=status.HTTP_201_CREATED,
+    )

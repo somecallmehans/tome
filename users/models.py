@@ -52,6 +52,7 @@ class ParticipantAchievements(models.Model):
     achievement = models.ForeignKey(Achievements, on_delete=models.CASCADE)
     round = models.ForeignKey(Rounds, on_delete=models.CASCADE)
     session = models.ForeignKey(Sessions, on_delete=models.CASCADE)
+    deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = "participant_achievements"

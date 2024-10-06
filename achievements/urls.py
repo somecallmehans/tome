@@ -4,9 +4,17 @@ from .views import (
     post_achievements_for_participants,
     upsert_achievements,
     get_colors,
+    get_achievements_by_participant_session,
+    upsert_participant_achievements,
 )
 
 urlpatterns = [
+    path("upsert_earned/", upsert_participant_achievements, name="upsert_earned"),
+    path(
+        "earned_for_session/<int:session_id>/",
+        get_achievements_by_participant_session,
+        name="earned_for_session",
+    ),
     path("upsert_achievements/", upsert_achievements, name="upsert_achievements"),
     path(
         "submit_achievements/",
