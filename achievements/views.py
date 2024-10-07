@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Achievements, Colors
 from users.models import ParticipantAchievements
+from users.serializers import ParticipantsAchievementsSerializer
 from sessions_rounds.models import Pods
 from sessions_rounds.serializers import RoundsSerializer
 from .serializers import AchievementsSerializer, ColorsSerializer
@@ -140,10 +141,10 @@ def upsert_participant_achievements(request):
     body = json.loads(request.body.decode("utf-8"))
     earned_id = body.get("earned_id", None)
     achievement = body.get("achievement", None)
-    participant = body.get("participants", None)
+    participant = body.get("participant", None)
     round = body.get("round", None)
     session = body.get("session", None)
-    # deleted = body.get("deleted", None)
+    deleted = body.get("deleted", False)
 
     if earned_id:
         try:
@@ -156,6 +157,8 @@ def upsert_participant_achievements(request):
                 pa.round_id = round
             if session:
                 pa.session_id = session
+            if deleted:
+                pa.deleted = deleted
 
             pa.save()
             return Response(
@@ -168,6 +171,7 @@ def upsert_participant_achievements(request):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+    breakpoint()
     new_entry = ParticipantAchievements.objects.create(
         achievement_id=achievement,
         participant_id=participant,
@@ -175,6 +179,6 @@ def upsert_participant_achievements(request):
         session_id=session,
     )
     return Response(
-        new_entry,
+        ParticipantsAchievementsSerializer(new_entry).data,
         status=status.HTTP_201_CREATED,
     )
