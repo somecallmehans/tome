@@ -25,6 +25,7 @@ class Participants(models.Model):
 
         total_points = ParticipantAchievements.objects.filter(
             participant=self.id,
+            deleted=False,
             session__month_year=mm_yy,
         ).aggregate(
             total_points=models.Sum(

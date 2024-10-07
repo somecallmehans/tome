@@ -30,9 +30,9 @@ def get_achievements_with_restrictions(request):
 def get_achievements_by_participant_session(_, session_id):
     """Get all the achievements earned by participants for a given session."""
 
-    data = ParticipantAchievements.objects.filter(session=session_id).select_related(
-        "participant", "achievement", "round"
-    )
+    data = ParticipantAchievements.objects.filter(
+        session=session_id, deleted=False
+    ).select_related("participant", "achievement", "round")
 
     achievements_by_participant = defaultdict(list)
     for pa in data:
@@ -53,6 +53,8 @@ def get_achievements_by_participant_session(_, session_id):
         ]
         participant_data["achievements"] = achievements_data
         result.append(participant_data)
+
+    result.sort(reverse=True, key=lambda x: x["total_points"])
 
     return Response(result, status=status.HTTP_200_OK)
 
@@ -171,7 +173,6 @@ def upsert_participant_achievements(request):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    breakpoint()
     new_entry = ParticipantAchievements.objects.create(
         achievement_id=achievement,
         participant_id=participant,

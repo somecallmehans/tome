@@ -10,13 +10,13 @@ from .views import (
 
 urlpatterns = [
     path(
-        "sessions_by_date/",
+        "sessions_by_date/<str:mm_yy>/",
         sessions_and_rounds_by_date,
         name="sessions-and-rounds-by-date",
     ),
     path("pods/<int:round>/", get_pods, name="pods"),
     path("all_sessions/", all_sessions, name="all_sessions"),
-    path("sessions/", sessions_and_rounds, name="make_sessions_and_rounds"),
+    path("sessions/<str:mm_yy>/", sessions_and_rounds, name="make_sessions_and_rounds"),
     path("begin_round/", begin_round, name="begin_round"),
     path("close_round/", close_round, name="close_round"),
 ]
