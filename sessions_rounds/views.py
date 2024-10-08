@@ -44,7 +44,8 @@ def all_sessions(request):
 def sessions_and_rounds(request, mm_yy):
     """Get or create a sessions/rounds for today."""
     today = datetime.today()
-    mm_yy = mm_yy or today.strftime("%m-%y")
+    if mm_yy == "new" or None:
+        mm_yy = today.strftime("%m-%y")
 
     if request.method == POST:
         new_session = Sessions.objects.create(month_year=mm_yy)
