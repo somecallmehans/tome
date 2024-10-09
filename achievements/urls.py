@@ -6,6 +6,7 @@ from .views import (
     get_colors,
     get_achievements_by_participant_session,
     upsert_participant_achievements,
+    get_achievements_by_participant_month,
 )
 
 urlpatterns = [
@@ -14,6 +15,11 @@ urlpatterns = [
         "earned_for_session/<int:session_id>/",
         get_achievements_by_participant_session,
         name="earned_for_session",
+    ),
+    path(
+        "achievements_for_month/<str:mm_yy>/",
+        get_achievements_by_participant_month,
+        name="achievements_for_month",
     ),
     path("upsert_achievements/", upsert_achievements, name="upsert_achievements"),
     path(

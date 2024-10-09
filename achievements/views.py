@@ -1,6 +1,6 @@
 import json
 
-from collections import defaultdict
+from datetime import datetime
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -8,12 +8,14 @@ from rest_framework.decorators import api_view
 from .models import Achievements, Colors
 from users.models import ParticipantAchievements
 from users.serializers import ParticipantsAchievementsSerializer
-from sessions_rounds.models import Pods
-from sessions_rounds.serializers import RoundsSerializer
+from sessions_rounds.models import Pods, Sessions
 from .serializers import AchievementsSerializer, ColorsSerializer
-from users.serializers import ParticipantsSerializer
 
-from achievements.helpers import AchievementCleaverService, make_achievement_map
+from achievements.helpers import (
+    AchievementCleaverService,
+    make_achievement_map,
+    all_participant_achievements_for_month,
+)
 
 
 @api_view(["GET"])
@@ -30,33 +32,33 @@ def get_achievements_with_restrictions(request):
 def get_achievements_by_participant_session(_, session_id):
     """Get all the achievements earned by participants for a given session."""
 
-    data = ParticipantAchievements.objects.filter(
-        session=session_id, deleted=False
-    ).select_related("participant", "achievement", "round")
-
-    achievements_by_participant = defaultdict(list)
-    for pa in data:
-        achievements_by_participant[pa.participant].append(
-            {"achievement": pa.achievement, "round": pa.round, "earned_id": pa.id}
-        )
-
-    result = []
-    for participant, achievements in achievements_by_participant.items():
-        participant_data = ParticipantsSerializer(participant).data
-        achievements_data = [
-            {
-                **AchievementsSerializer(achievement["achievement"]).data,
-                "round": RoundsSerializer(achievement["round"]).data,
-                "earned_id": achievement["earned_id"],
-            }
-            for achievement in achievements
-        ]
-        participant_data["achievements"] = achievements_data
-        result.append(participant_data)
-
+    result = all_participant_achievements_for_month(session_id)
     result.sort(reverse=True, key=lambda x: x["total_points"])
 
     return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_achievements_by_participant_month(_, mm_yy):
+    """Get all of the achievements earned by participants in a given month."""
+
+    today = datetime.today()
+
+    if mm_yy == "new" or None:
+        mm_yy = today.strftime("%m-%y")
+
+    sessions_for_month = Sessions.objects.filter(month_year=mm_yy)
+
+    result = {}
+    for session in sessions_for_month:
+        achievements = all_participant_achievements_for_month(session.id)
+        for achievement in achievements:
+            result[achievement["id"]] = achievement
+
+    unique_achievements = list(result.values())
+    unique_achievements.sort(key=lambda x: x["total_points"], reverse=True)
+
+    return Response(unique_achievements, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])

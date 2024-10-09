@@ -40,10 +40,18 @@ def all_sessions(request):
     return Response(session_map, status=status.HTTP_200_OK)
 
 
+@api_view(["GET"])
+def get_unique_session_months(request):
+    """Get a list of unique month-years for sessions."""
+    months = Sessions.objects.values("month_year").distinct()
+    return Response([m["month_year"] for m in months], status=status.HTTP_200_OK)
+
+
 @api_view(["GET", "POST"])
 def sessions_and_rounds(request, mm_yy):
     """Get or create a sessions/rounds for today."""
     today = datetime.today()
+
     if mm_yy == "new" or None:
         mm_yy = today.strftime("%m-%y")
 

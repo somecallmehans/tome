@@ -1,6 +1,12 @@
+from collections import defaultdict
+
 from achievements.models import Achievements, WinningCommanders, Colors
 from users.models import Participants, ParticipantAchievements
+from users.serializers import ParticipantsSerializer
+from achievements.serializers import AchievementsSerializer
 from sessions_rounds.models import Sessions, Rounds, Pods
+from users.serializers import ParticipantsSerializer
+from sessions_rounds.serializers import RoundsSerializer
 
 
 class AchievementCleaverService:
@@ -76,3 +82,31 @@ def make_achievement_map(achievements):
                     parent["children"].append(achievement)
 
     return achievement_map
+
+
+def all_participant_achievements_for_month(session_id):
+    data = ParticipantAchievements.objects.filter(
+        session=session_id, deleted=False
+    ).select_related("participant", "achievement", "round")
+
+    achievements_by_participant = defaultdict(list)
+    for pa in data:
+        achievements_by_participant[pa.participant].append(
+            {"achievement": pa.achievement, "round": pa.round, "earned_id": pa.id}
+        )
+
+    result = []
+    for participant, achievements in achievements_by_participant.items():
+        participant_data = ParticipantsSerializer(participant).data
+        achievements_data = [
+            {
+                **AchievementsSerializer(achievement["achievement"]).data,
+                "round": RoundsSerializer(achievement["round"]).data,
+                "earned_id": achievement["earned_id"],
+            }
+            for achievement in achievements
+        ]
+        participant_data["achievements"] = achievements_data
+        result.append(participant_data)
+
+    return result
