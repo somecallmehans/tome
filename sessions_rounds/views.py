@@ -5,7 +5,13 @@ from datetime import datetime
 
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Sessions, Rounds, Pods, PodsParticipants
 
@@ -85,6 +91,8 @@ def sessions_and_rounds_by_date(request):
 
 
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def begin_round(request):
     """Begin a round. Request expects a round_id, session_id, and a list of participants.
     If a participant in the list does not have an id, it will be created.
@@ -142,6 +150,8 @@ def get_pods(_, round):
 
 
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def close_round(request):
     """Close a round. Endpoint expects a round_id and a session_id
     Essentially flipping the associated round 'closed' flag to true

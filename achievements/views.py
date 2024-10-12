@@ -4,7 +4,14 @@ from datetime import datetime
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from .models import Achievements, Colors
 from users.models import ParticipantAchievements
 from users.serializers import ParticipantsAchievementsSerializer
@@ -73,6 +80,8 @@ def get_colors(request):
 
 
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def upsert_achievements(request):
     body = json.loads(request.body.decode("utf-8"))
     id = body.get("id", None)
@@ -106,6 +115,8 @@ def upsert_achievements(request):
 
 
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def post_achievements_for_participants(request):
     """
     Take in session_id, round_id, and a list of participants,
@@ -140,6 +151,8 @@ def post_achievements_for_participants(request):
 
 
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def upsert_participant_achievements(request):
     """Update the achievement for a given round/session."""
     body = json.loads(request.body.decode("utf-8"))
